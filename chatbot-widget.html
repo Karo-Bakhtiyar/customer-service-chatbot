@@ -3,14 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>AI Chatbot</title>
+<title>Customer Support Chat</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
-  background:#f5f5f5;
-}
-:root{--vh:1vh}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#f5f5f5}
+:root{--vh:1vh;--brand-color:#007bff;--brand-color-dark:#0056b3}
 
 #chat-toggle{
   position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
@@ -39,7 +36,7 @@ body{
   background:linear-gradient(135deg,var(--brand-color),var(--brand-color-dark));padding:14px 16px;
   display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
 }
-#chat-header h3{color:#fff;font-size:16px;font-weight:600;display:flex;align-items:center;gap:6px}
+#chat-header h3{color:#fff;font-size:16px;font-weight:600}
 #chat-close{
   background:none;border:none;cursor:pointer;padding:4px;
   border-radius:50%;transition:background .2s;display:flex;
@@ -50,21 +47,18 @@ body{
 
 #chat-messages{
   flex:1;overflow-y:auto;padding:16px;display:none;flex-direction:column;
-  gap:10px;background:#f9f5f6;
-  -webkit-overflow-scrolling:touch;
-  scroll-behavior:smooth;
+  gap:10px;background:#f9f5f6;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;
 }
 #chat-messages::-webkit-scrollbar{width:4px}
 #chat-messages::-webkit-scrollbar-thumb{background:#ccc;border-radius:4px}
 
 .msg{max-width:80%;padding:10px 14px;border-radius:14px;font-size:14px;line-height:1.45;word-wrap:break-word}
-.msg.bot{background:#fff;align-self:flex-start;border-bottom-left-radius:4px;
-  box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.msg.bot{background:#fff;align-self:flex-start;border-bottom-left-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .msg.user{background:var(--brand-color);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
 
-.typing-indicator{display:flex;gap:4px;padding:10px 14px;background:#fff;
+.typing-indicator{display:none;gap:4px;padding:10px 14px;background:#fff;
   align-self:flex-start;border-radius:14px;border-bottom-left-radius:4px;
-  box-shadow:0 1px 3px rgba(0,0,0,.08);display:none}
+  box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .typing-indicator span{width:7px;height:7px;background:#bbb;border-radius:50%;
   animation:typingBounce 1.4s infinite ease-in-out}
 .typing-indicator span:nth-child(2){animation-delay:.2s}
@@ -82,119 +76,63 @@ body{
 #chat-input:focus{border-color:var(--brand-color-dark)}
 #chat-input::placeholder{color:#aaa}
 #chat-send{
-  width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--brand-color),var(--brand-color-dark));
+  width:40px;height:40px;border-radius:50%;
+  background:linear-gradient(135deg,var(--brand-color),var(--brand-color-dark));
   border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
   transition:transform .2s;flex-shrink:0;
 }
 #chat-send:hover{transform:scale(1.08)}
+#chat-send:disabled{opacity:.5;cursor:not-allowed;transform:none}
 #chat-send svg{width:18px;height:18px;fill:#fff}
-
-#password-screen{
-  flex:1;display:none;flex-direction:column;align-items:center;justify-content:center;
-  padding:24px;background:#f9f5f6;gap:16px;
-}
-#password-screen.show{display:flex}
-#password-screen h3{font-size:18px;color:#333;font-weight:600}
-#password-screen input{
-  width:100%;max-width:260px;padding:12px 16px;border:1px solid #e0e0e0;
-  border-radius:24px;font-size:14px;outline:none;text-align:center;
-  transition:border-color .2s;
-}
-#password-screen input:focus{border-color:var(--brand-color-dark)}
-#password-screen input::placeholder{color:#aaa}
-#password-screen button{
-  padding:10px 28px;background:linear-gradient(135deg,var(--brand-color),var(--brand-color-dark));
-  border:none;border-radius:24px;font-size:14px;font-weight:600;color:#fff;
-  cursor:pointer;transition:transform .2s;
-}
-#password-screen button:hover{transform:scale(1.04)}
-#password-error{
-  color:#e74c3c;font-size:13px;display:none;margin-top:-8px;
-}
-#password-error.show{display:block}
 
 @media(max-width:480px){
   #chat-toggle{
-    bottom:max(16px, env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
+    bottom:max(16px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
     width:80px;height:80px;
   }
   #chat-container{
-    position:fixed;
-    top:0;left:0;
-    width:100%;height:calc(var(--vh, 1vh) * 100);
-    border-radius:0;
-    max-height:100dvh;
-    bottom:0;right:0;
-    padding-top:env(safe-area-inset-top);
-    padding-bottom:env(safe-area-inset-bottom);
+    position:fixed;top:0;left:0;width:100%;
+    height:calc(var(--vh,1vh)*100);border-radius:0;max-height:100dvh;
+    padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);
   }
-  #chat-header{
-    padding-top:max(14px, env(safe-area-inset-top));
-    min-height:56px;
-  }
-  #chat-close{
-    width:44px;height:44px;
-  }
+  #chat-header{padding-top:max(14px,env(safe-area-inset-top));min-height:56px}
+  #chat-close{width:44px;height:44px}
   #chat-close svg{width:22px;height:22px}
-  #chat-input-wrap{
-    padding:max(12px, env(safe-area-inset-bottom)) 12px 12px;
-    min-height:64px;
-  }
-  #chat-input{
-    font-size:16px;
-    padding:14px 18px;
-    min-height:48px;
-  }
-  #chat-send{
-    width:50px;height:50px;
-  }
+  #chat-input-wrap{padding:max(12px,env(safe-area-inset-bottom)) 12px 12px;min-height:64px}
+  #chat-input{font-size:16px;padding:14px 18px;min-height:48px}
+  #chat-send{width:50px;height:50px}
   #chat-send svg{width:22px;height:22px}
-  #password-screen{
-    padding:max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
-  }
-  #password-screen input{
-    font-size:16px;
-    padding:14px 18px;
-    min-height:48px;
-  }
-  #password-screen button{
-    min-height:48px;
-    padding:14px 28px;
-  }
 }
 </style>
 </head>
 <body>
-
-<!-- Chatbot Widget — generated from config.js -->
 <script src="config.js"></script>
 <script>
 (function(){
   const C = window.CONFIG || {};
-  const STORE_NAME = C.storeName || "Support";
-  const STORE_URL = C.storeUrl || "#";
+  const NAME = C.businessName || "Support";
+  const URL = C.businessUrl || "#";
   const TAGLINE = C.tagline || "How can I help you today?";
-  const BRAND_COLOR = C.brandColor || "#007bff";
-  const BRAND_COLOR_DARK = C.brandColorDark || "#0056b3";
-  const PRODUCTS = C.products || "";
+  const COLOR = C.brandColor || "#007bff";
+  const COLOR_DARK = C.brandColorDark || "#0056b3";
+  const OFFERINGS = C.offerings || "";
   const POLICIES = C.policies || "";
   const FAQ = C.faq || "";
-  const CONTACT_EMAIL = C.contactEmail || "";
-  const FOUNDER_INFO = C.founderInfo || "";
-  const PASSWORD = C.password || "";
-  const API_URL = C.apiUrl || "/.netlify/functions/chat";
+  const EMAIL = C.contactEmail || "";
+  const ABOUT = C.about || "";
+  const API_URL = C.apiUrl || "";
 
-  document.documentElement.style.setProperty('--brand-color', BRAND_COLOR);
-  document.documentElement.style.setProperty('--brand-color-dark', BRAND_COLOR_DARK);
+  document.documentElement.style.setProperty('--brand-color', COLOR);
+  document.documentElement.style.setProperty('--brand-color-dark', COLOR_DARK);
 
-  const SYSTEM_PROMPT = `You are a friendly customer support chatbot for ${STORE_NAME}. Be helpful, concise, and warm. Keep responses under 3 sentences unless listing products. Use the store data below to answer questions accurately.
+  const SYSTEM_PROMPT = `You are a friendly customer support chatbot for ${NAME}. Be helpful, concise, and warm. Keep responses under 3 sentences unless listing items. Use the data below to answer questions accurately.
 
-## Store Info
-- Website: ${STORE_URL}
+## Business Info
+- Website: ${URL}
 - Tagline: ${TAGLINE}
 
-## Products
-${PRODUCTS}
+## What We Offer
+${OFFERINGS}
 
 ## Policies
 ${POLICIES}
@@ -203,193 +141,147 @@ ${POLICIES}
 ${FAQ}
 
 ## Contact
-${CONTACT_EMAIL}
+${EMAIL}
 
-If you don't know the answer, say "I'm not sure about that, but you can contact us at ${CONTACT_EMAIL} for help." Never make up product names, prices, or policies. If asked about something not in your data, direct them to contact support.`;
+If you don't know the answer, say "I'm not sure about that, but you can contact us at ${EMAIL} for help." Never make up names, prices, or policies. If asked about something not in your data, direct them to contact support.`;
 
-  const FALLBACK_RESPONSES = [
-    { keywords: ['product','items','buy','purchase','shop'], response: `We have great products! Check out our collection at ${STORE_URL}. What are you looking for?` },
-    { keywords: ['price','cost','how much'], response: `Visit ${STORE_URL} to see all prices and current deals!` },
-    { keywords: ['shipping','delivery','ship'], response: `Check ${STORE_URL} for shipping details!` },
-    { keywords: ['return','refund','exchange'], response: `Visit ${STORE_URL} for our return policy details.` },
-    { keywords: ['contact','email','support','help'], response: `You can reach us at ${CONTACT_EMAIL}. We are happy to help!` },
-    { keywords: ['discount','coupon','sale','code'], response: `Check our website for current promotions: ${STORE_URL}` },
-    { keywords: ['who','about','founder','story'], response: FOUNDER_INFO || "We're a small team passionate about what we do!" }
+  const FALLBACKS = [
+    { k: ['product','item','buy','purchase','shop','service'], r: `Check out what we offer at ${URL}. What are you looking for?` },
+    { k: ['price','cost','how much'], r: `Visit ${URL} to see all pricing!` },
+    { k: ['shipping','delivery','ship'], r: `Check ${URL} for shipping details!` },
+    { k: ['return','refund','exchange'], r: `Visit ${URL} for our return policy.` },
+    { k: ['contact','email','support','help'], r: `Reach us at ${EMAIL}. We're happy to help!` },
+    { k: ['discount','coupon','sale','code'], r: `Check ${URL} for current promotions!` },
+    { k: ['who','about','story'], r: ABOUT || "We're a small team passionate about what we do!" }
   ];
 
-  function getFallbackResponse(userMessage){
-    const lower = userMessage.toLowerCase();
-    for(const item of FALLBACK_RESPONSES){
-      if(item.keywords.some(kw => lower.includes(kw))) return item.response;
-    }
-    return `Thanks for your message! For the best help, visit ${STORE_URL} or email ${CONTACT_EMAIL}. Our team replies within 24 hours.`;
+  function getFallback(msg){
+    const l = msg.toLowerCase();
+    for(const f of FALLBACKS){ if(f.k.some(k => l.includes(k))) return f.r; }
+    return `Thanks for your message! Visit ${URL} or email ${EMAIL} for help. Our team replies within 24 hours.`;
+  }
+
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.appendChild(document.createTextNode(str));
+    return d.innerHTML;
   }
 
   // Build DOM
   const toggle = document.createElement('button');
   toggle.id = 'chat-toggle';
   toggle.setAttribute('aria-label', 'Open chat');
-  toggle.innerHTML = `<svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><span>Chat with ${STORE_NAME}</span>`;
+  toggle.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><span>Chat</span>';
 
-  const container = document.createElement('div');
-  container.id = 'chat-container';
-  container.innerHTML = `
+  const el = document.createElement('div');
+  el.id = 'chat-container';
+  el.innerHTML = `
     <div id="chat-header">
-      <h3>Chat with ${STORE_NAME}</h3>
+      <h3>${escapeHtml(NAME)}</h3>
       <button id="chat-close" aria-label="Close chat">
         <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
       </button>
     </div>
-    <div id="password-screen" class="${PASSWORD ? 'show' : ''}">
-      <h3>Enter Password</h3>
-      <input id="password-input" type="password" placeholder="Password" autocomplete="off">
-      <div id="password-error">Incorrect password. Try again.</div>
-      <button id="password-submit">Enter to chat</button>
-    </div>
     <div id="chat-messages">
-      <div class="msg bot">Hi there! Welcome to ${STORE_NAME}. ${TAGLINE}</div>
+      <div class="msg bot">Hi! Welcome to ${escapeHtml(NAME)}. ${escapeHtml(TAGLINE)}</div>
       <div id="typing" class="typing-indicator"><span></span><span></span><span></span></div>
     </div>
     <div id="chat-input-wrap">
       <input id="chat-input" type="text" placeholder="Type your message..." autocomplete="off">
-      <button id="chat-send" aria-label="Send message">
+      <button id="chat-send" aria-label="Send">
         <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
       </button>
-    </div>
-  `;
+    </div>`;
 
   document.body.appendChild(toggle);
-  document.body.appendChild(container);
+  document.body.appendChild(el);
 
-  const chatClose = document.getElementById('chat-close');
-  const chatMessages = document.getElementById('chat-messages');
-  const chatInput = document.getElementById('chat-input');
-  const chatSend = document.getElementById('chat-send');
-  const typingIndicator = document.getElementById('typing');
-  const passwordScreen = document.getElementById('password-screen');
-  const passwordInput = document.getElementById('password-input');
-  const passwordSubmit = document.getElementById('password-submit');
-  const passwordError = document.getElementById('password-error');
+  const $ = id => document.getElementById(id);
+  const chatClose = $('chat-close');
+  const messages = $('chat-messages');
+  const input = $('chat-input');
+  const send = $('chat-send');
+  const typing = $('typing');
 
-  let isOpen = false;
-  let isVerified = !PASSWORD;
-  let conversationHistory = [];
+  let open = false;
+  let history = [];
 
   function toggleChat(){
-    isOpen = !isOpen;
-    container.classList.toggle('open', isOpen);
-    toggle.style.display = isOpen ? 'none' : 'flex';
-    if(isOpen) chatInput.focus();
+    open = !open;
+    el.classList.toggle('open', open);
+    toggle.style.display = open ? 'none' : 'flex';
+    if(open) input.focus();
   }
 
   toggle.addEventListener('click', toggleChat);
   chatClose.addEventListener('click', toggleChat);
 
-  if(PASSWORD){
-    passwordSubmit.addEventListener('click', verifyPassword);
-    passwordInput.addEventListener('keydown', function(e){ if(e.key === 'Enter') verifyPassword(); });
+  function renderMd(t){
+    return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g,'<em>$1</em>')
+            .replace(/\n/g,'<br>');
   }
 
-  async function verifyPassword(){
-    const pw = passwordInput.value.trim();
-    if(!pw) return;
-    passwordError.classList.remove('show');
-    passwordSubmit.disabled = true;
-    if(pw === PASSWORD){
-      isVerified = true;
-      passwordScreen.classList.remove('show');
-      chatMessages.style.display = 'flex';
-      document.getElementById('chat-input-wrap').style.display = 'flex';
-      chatInput.focus();
-    } else {
-      passwordError.classList.add('show');
-      passwordInput.value = '';
-      passwordInput.focus();
-    }
-    passwordSubmit.disabled = false;
+  function addMsg(text, who){
+    const d = document.createElement('div');
+    d.className = 'msg ' + who;
+    d.innerHTML = who === 'bot' ? renderMd(text) : escapeHtml(text);
+    messages.insertBefore(d, typing);
+    messages.scrollTop = messages.scrollHeight;
   }
 
-  function renderMarkdown(text){
-    return text
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/\n/g, '<br>');
-  }
+  function showTyping(){ typing.style.display = 'flex'; messages.scrollTop = messages.scrollHeight; }
+  function hideTyping(){ typing.style.display = 'none'; }
 
-  function addMessage(text, sender){
-    const div = document.createElement('div');
-    div.className = 'msg ' + sender;
-    if(sender === 'bot') div.innerHTML = renderMarkdown(text);
-    else div.textContent = text;
-    chatMessages.insertBefore(div, typingIndicator);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
-
-  function showTyping(){ typingIndicator.style.display = 'flex'; chatMessages.scrollTop = chatMessages.scrollHeight; }
-  function hideTyping(){ typingIndicator.style.display = 'none'; }
-
-  async function sendMessage(){
-    const text = chatInput.value.trim();
+  async function sendMsg(){
+    const text = input.value.trim();
     if(!text) return;
-    chatInput.value = '';
-    addMessage(text, 'user');
-    conversationHistory.push({role:'user', content:text});
+    input.value = '';
+    addMsg(text, 'user');
+    history.push({role:'user', content:text});
     showTyping();
-    chatSend.disabled = true;
+    send.disabled = true;
 
     try{
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 30000);
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 30000);
       const res = await fetch(API_URL, {
         method:'POST',
-        headers:{ 'Content-Type':'application/json' },
-        body: JSON.stringify({
-          messages: [
-            {role:'system', content:SYSTEM_PROMPT},
-            ...conversationHistory
-          ]
-        }),
-        signal: controller.signal
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({messages:[{role:'system',content:SYSTEM_PROMPT},...history]}),
+        signal: ctrl.signal
       });
-      clearTimeout(timeout);
+      clearTimeout(t);
       if(!res.ok) throw new Error('HTTP ' + res.status);
       const data = await res.json();
-      const reply = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content
-        ? data.choices[0].message.content.trim() : '';
+      const reply = data.choices?.[0]?.message?.content?.trim() || '';
       if(reply){
-        addMessage(reply, 'bot');
-        conversationHistory.push({role:'assistant', content:reply});
+        addMsg(reply, 'bot');
+        history.push({role:'assistant', content:reply});
       } else {
         throw new Error('Empty response');
       }
-    }catch(err){
-      console.warn('Chatbot API error:', err.message || err);
-      const fb = getFallbackResponse(text);
-      addMessage(fb, 'bot');
-      conversationHistory.push({role:'assistant', content:fb});
+    } catch(err){
+      const fb = getFallback(text);
+      addMsg(fb, 'bot');
+      history.push({role:'assistant', content:fb});
     }
 
     hideTyping();
-    chatSend.disabled = false;
+    send.disabled = false;
   }
 
-  chatSend.addEventListener('click', sendMessage);
-  chatInput.addEventListener('keydown', function(e){ if(e.key === 'Enter') sendMessage(); });
+  send.addEventListener('click', sendMsg);
+  input.addEventListener('keydown', e => { if(e.key === 'Enter') sendMsg(); });
 
   if(window.visualViewport){
-    window.visualViewport.addEventListener('resize', function(){
-      document.documentElement.style.setProperty('--vh', window.visualViewport.height * 0.01 + 'px');
-    });
-    document.documentElement.style.setProperty('--vh', window.visualViewport.height * 0.01 + 'px');
+    const setVh = () => document.documentElement.style.setProperty('--vh', window.visualViewport.height * 0.01 + 'px');
+    window.visualViewport.addEventListener('resize', setVh);
+    setVh();
   }
 
-  chatInput.addEventListener('focus', function(){
-    setTimeout(function(){ chatMessages.scrollTop = chatMessages.scrollHeight; }, 100);
-  });
-
-  toggle.addEventListener('click', function(){
-    setTimeout(function(){ chatInput.focus(); }, 350);
-  });
+  input.addEventListener('focus', () => setTimeout(() => messages.scrollTop = messages.scrollHeight, 100));
+  toggle.addEventListener('click', () => setTimeout(() => input.focus(), 350));
 })();
 </script>
 </body>
